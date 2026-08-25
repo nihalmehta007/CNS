@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Services · Crimson Nyx Studios</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Crimson Nyx Studios offers Graphic Design, Website Development, Game Development, and App Development. Four core services, one unmistakable style.">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="animations.css">
+<style>
+  .services-section { padding: 0 var(--sp-lg) var(--sp-3xl); }
+  .services-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px; background: rgba(255,255,255,0.06); margin-top: 40px;
+  }
+  .service-card {
+    background: var(--dark); padding: 40px 32px 44px;
+    position: relative; overflow: hidden;
+    transition: background var(--dur-med);
+  }
+  .service-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: var(--crimson);
+    transform: scaleX(0); transition: transform var(--dur-med); transform-origin: left;
+  }
+  .service-card:hover { background: var(--surface-hover); }
+  .service-card:hover::after { transform: scaleX(1); }
+  .service-anchor { scroll-margin-top: 120px; }
+  .service-num { font-size: 11px; letter-spacing: 0.2em; color: var(--crimson); margin-bottom: 20px; font-weight: 500; }
+  .service-name { font-family: var(--serif); font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+  .service-tagline { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--zinc); margin-bottom: 16px; }
+  .service-desc { font-size: 14px; color: var(--zinc-light); line-height: 1.8; margin-bottom: 16px; }
+  .service-list { font-size: 13px; color: var(--zinc-light); line-height: 1.7; list-style: none; margin-left: 0; }
+  .service-list li::before { content: '— '; color: var(--crimson); }
+
+  @media (max-width: 900px) {
+    .services-section { padding: 0 20px 80px; }
+    .services-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html#hero" class="nav-brand">
+    <img src="cnslogo1.png" alt="Crimson Nyx Studios" class="nav-logo-img">
+    <div class="nav-brand-text">
+      <span class="nav-brand-name">Crimson Nyx Studios</span>
+      <span class="nav-brand-tagline">Where Brilliance Emerges</span>
+    </div>
+  </a>
+  <div class="nav-right">
+    <ul class="nav-links" id="navLinks">
+      <li><a href="services.html">Services</a></li>
+      <li><a href="work.html">Work</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <a href="contact.html" class="nav-cta magnetic">Start a Project</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<header class="page-hero">
+  <div class="page-eyebrow reveal reveal-fade-up">What We Offer</div>
+  <h1 class="page-title reveal reveal-fade-up delay-100">Four core services,<br>one unmistakable style.</h1>
+  <p class="page-sub reveal reveal-fade-up delay-200">From first sketch to final launch, we design and build experiences that feel cinematic, bold, and unforgettable.</p>
+</header>
+
+<main class="services-section">
+  <div class="services-grid">
+    <section class="service-card service-anchor reveal reveal-fade-up hover-elevate hover-tilt" id="graphic-design">
+      <div class="service-num">01</div>
+      <h2 class="service-name">Graphic Design</h2>
+      <p class="service-tagline">Visual identities with teeth.</p>
+      <p class="service-desc">We develop brands that live in the shadows and stand out in the spotlight—from logos to complete visual systems.</p>
+      <ul class="service-list">
+        <li>Logo & identity design</li>
+        <li>Brand guidelines & systems</li>
+        <li>Social media & marketing assets</li>
+        <li>Album covers, posters & key art</li>
+      </ul>
+    </section>
+
+    <section class="service-card service-anchor reveal reveal-fade-up delay-100 hover-elevate hover-tilt" id="website-development">
+      <div class="service-num">02</div>
+      <h2 class="service-name">Website Development</h2>
+      <p class="service-tagline">Fast, fluid, unforgettable.</p>
+      <p class="service-desc">We craft high-performance websites with smooth motion, sharp typography, and a UX that feels effortless.</p>
+      <ul class="service-list">
+        <li>Landing pages & marketing sites</li>
+        <li>Portfolio & studio websites</li>
+        <li>Responsive, mobile-first builds</li>
+        <li>Basic SEO & performance tuning</li>
+      </ul>
+    </section>
+
+    <section class="service-card service-anchor reveal reveal-fade-up hover-elevate hover-tilt" id="game-development">
+      <div class="service-num">03</div>
+      <h2 class="service-name">Game Development <span class="badge-soon">Coming Soon</span></h2>
+      <p class="service-tagline">Worlds you want to stay in.</p>
+      <p class="service-desc">We build experiences that mix tight mechanics with strong visual direction for players who love atmosphere.</p>
+      <ul class="service-list">
+        <li>2D & 3D game concepts</li>
+        <li>Prototypes & vertical slices</li>
+        <li>Art direction & asset creation</li>
+        <li>Mobile, web, and PC deployment</li>
+      </ul>
+    </section>
+
+    <section class="service-card service-anchor reveal reveal-fade-up delay-100 hover-elevate hover-tilt" id="app-development">
+      <div class="service-num">04</div>
+      <h2 class="service-name">App Development <span class="badge-soon">Coming Soon</span></h2>
+      <p class="service-tagline">Interfaces with attitude.</p>
+      <p class="service-desc">We design and develop apps that feel premium, responsive, and distinctly on-brand—across platforms.</p>
+      <ul class="service-list">
+        <li>Product discovery & UX flows</li>
+        <li>High-fidelity UI design</li>
+        <li>Cross-platform app builds</li>
+        <li>Launch support & iterations</li>
+      </ul>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-brand">
+    <img src="cnslogo1.png" alt="Crimson Nyx Studios" class="footer-logo-img">
+    <div class="footer-brand-text">
+      <span class="footer-brand-name">Crimson Nyx Studios</span>
+      <span class="footer-brand-tagline">Where Brilliance Emerges</span>
+    </div>
+  </div>
+  <p class="footer-copy">© 2026 Crimson Nyx Studios. All rights reserved.</p>
+</footer>
+
+<script src="animations.js"></script>
+</body>
+</html>

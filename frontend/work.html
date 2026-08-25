@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Work · Crimson Nyx Studios</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Selected work and dark-tinted stories from Crimson Nyx Studios. Branding, websites, game worlds, and more.">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="animations.css">
+<style>
+  .work-list { padding: 0 var(--sp-lg) var(--sp-3xl); }
+  .work-grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2px; background: rgba(255,255,255,0.04); margin-top: 40px;
+  }
+  .work-card {
+    background: var(--surface); padding: 32px 28px 36px;
+    position: relative; overflow: hidden; cursor: pointer;
+    transition: background var(--dur-med);
+  }
+  .work-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: var(--crimson);
+    transform: scaleX(0); transition: transform var(--dur-med); transform-origin: left;
+  }
+  .work-card:hover { background: #141414; }
+  .work-card:hover::after { transform: scaleX(1); }
+  .work-num { font-size: 11px; letter-spacing: 0.2em; color: var(--crimson); margin-bottom: 20px; }
+  .work-type { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--zinc); margin-bottom: 10px; }
+  .work-name { font-family: var(--serif); font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+  .work-desc { font-size: 14px; color: var(--zinc-light); line-height: 1.7; margin-bottom: 18px; }
+  .work-meta { font-size: 11px; color: var(--zinc); text-transform: uppercase; letter-spacing: 0.14em; }
+
+  @media (max-width: 900px) {
+    .work-list { padding: 0 20px 80px; }
+    .work-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .work-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html#hero" class="nav-brand">
+    <img src="cnslogo1.png" alt="Crimson Nyx Studios" class="nav-logo-img">
+    <div class="nav-brand-text">
+      <span class="nav-brand-name">Crimson Nyx Studios</span>
+      <span class="nav-brand-tagline">Where Brilliance Emerges</span>
+    </div>
+  </a>
+  <div class="nav-right">
+    <ul class="nav-links" id="navLinks">
+      <li><a href="services.html">Services</a></li>
+      <li><a href="work.html">Work</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <a href="contact.html" class="nav-cta magnetic">Start a Project</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<header class="page-hero">
+  <div class="page-eyebrow reveal reveal-fade-up">Showcase</div>
+  <h1 class="page-title reveal reveal-fade-up delay-100">Selected work &<br>dark-tinted stories.</h1>
+  <p class="page-sub reveal reveal-fade-up delay-200">From branding to game worlds, here are some of the projects where Crimson Nyx Studios has left its mark.</p>
+</header>
+
+<main class="work-list">
+  <div class="work-grid">
+    <article class="work-card reveal reveal-scale-in hover-elevate hover-tilt">
+      <div class="work-num">01</div>
+      <div class="work-type">Brand Identity · Graphic Design</div>
+      <h2 class="work-name">Nocturne Coffee Co.</h2>
+      <p class="work-desc">A moody, cinematic brand system for an artisan coffee roastery, blending deep shadows with molten highlights.</p>
+      <div class="work-meta">Logo · Packaging · Social Kits</div>
+    </article>
+
+    <article class="work-card reveal reveal-scale-in delay-100 hover-elevate hover-tilt">
+      <div class="work-num">02</div>
+      <div class="work-type">Website · Experience</div>
+      <h2 class="work-name">Obsidian Records</h2>
+      <p class="work-desc">An interactive label site with glitch-inspired transitions, track previews, and artist spotlights in a minimal dark UI.</p>
+      <div class="work-meta">Web Design · Frontend Dev</div>
+    </article>
+
+    <article class="work-card reveal reveal-scale-in delay-200 hover-elevate hover-tilt">
+      <div class="work-num">03</div>
+      <div class="work-type">Game · Worldbuilding</div>
+      <h2 class="work-name">Echoes of Nyx</h2>
+      <p class="work-desc">A 2.5D atmospheric platformer where players navigate a neon-drenched city ruled by shifting shadows and light.</p>
+      <div class="work-meta">Game Design · Art Direction</div>
+    </article>
+
+    <article class="work-card reveal reveal-scale-in hover-elevate hover-tilt">
+      <div class="work-num">04</div>
+      <div class="work-type">App · Product</div>
+      <h2 class="work-name">Lumen Tracker</h2>
+      <p class="work-desc">A productivity app with a dark, grounded visual style that turns daily tasks into streaks of crimson light.</p>
+      <div class="work-meta">UI/UX · Mobile</div>
+    </article>
+
+    <article class="work-card reveal reveal-scale-in delay-100 hover-elevate hover-tilt">
+      <div class="work-num">05</div>
+      <div class="work-type">Web · Landing</div>
+      <h2 class="work-name">Nightshift Studio</h2>
+      <p class="work-desc">A single-page portfolio for a photography collective, featuring parallax, scroll stories, and bold typography.</p>
+      <div class="work-meta">Web Design</div>
+    </article>
+
+    <article class="work-card reveal reveal-scale-in delay-200 hover-elevate hover-tilt">
+      <div class="work-num">06</div>
+      <div class="work-type">Visual · Motion</div>
+      <h2 class="work-name">Crimson Signals</h2>
+      <p class="work-desc">A set of looping motion graphics for streamers and creators, inspired by glitch art and analog interference.</p>
+      <div class="work-meta">Motion · Overlays</div>
+    </article>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-brand">
+    <img src="cnslogo1.png" alt="Crimson Nyx Studios" class="footer-logo-img">
+    <div class="footer-brand-text">
+      <span class="footer-brand-name">Crimson Nyx Studios</span>
+      <span class="footer-brand-tagline">Where Brilliance Emerges</span>
+    </div>
+  </div>
+  <p class="footer-copy">© 2026 Crimson Nyx Studios. All rights reserved.</p>
+</footer>
+
+<script src="animations.js"></script>
+</body>
+</html>

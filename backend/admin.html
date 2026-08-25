@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Crimson Nyx Studios</title>
+  <style>
+    :root {
+      --crimson: #e11d48;
+      --void: #000;
+      --surface: #111;
+      --zinc: #71717a;
+      --zinc-light: #a1a1aa;
+      --white: #fafafa;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background: var(--void);
+      color: var(--white);
+    }
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand { display: flex; flex-direction: column; line-height: 1.2; }
+    .brand strong { font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .brand span { font-size: 12px; color: var(--zinc-light); }
+    .actions { display: flex; align-items: center; gap: 10px; }
+    button {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.14);
+      padding: 10px 12px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    button:hover { border-color: rgba(255,255,255,0.35); }
+    a { color: var(--crimson); text-decoration: none; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+    main { padding: 18px 20px 60px; max-width: 1200px; margin: 0 auto; }
+    .status { margin: 10px 0 16px; color: var(--zinc-light); font-size: 13px; }
+    .status.err { color: rgba(248, 113, 113, 0.95); }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .row {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 14px;
+    }
+    .row-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .meta { color: var(--zinc-light); font-size: 13px; }
+    .meta code { font-family: var(--mono); font-size: 12px; color: var(--zinc); }
+    .who { font-weight: 700; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(225, 29, 72, 0.3);
+      padding: 6px 10px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--zinc-light);
+    }
+    .msg { white-space: pre-wrap; line-height: 1.7; color: var(--white); }
+    .muted { color: var(--zinc); font-family: var(--mono); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <strong>Admin</strong>
+      <span>Contact submissions</span>
+    </div>
+    <div class="actions">
+      <a href="/index.html">Back to site</a>
+      <button id="refreshBtn">Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="status" id="status">Loading…</div>
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const gridEl = document.getElementById('grid');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    function setStatus(text, kind) {
+      statusEl.textContent = text;
+      statusEl.className = 'status' + (kind ? (' ' + kind) : '');
+    }
+
+    function escapeHtml(s) {
+      return (s ?? '').toString()
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;');
+    }
+
+    function render(messages) {
+      if (!messages.length) {
+        gridEl.innerHTML = '<div class="row"><div class="meta">No messages yet.</div></div>';
+        return;
+      }
+      gridEl.innerHTML = messages.map(m => `
+        <div class="row">
+          <div class="row-top">
+            <div class="meta">
+              <span class="who">${escapeHtml(m.name)}</span>
+              <span class="muted">(${escapeHtml(m.email)})</span>
+              <span class="muted">· #${escapeHtml(m.id)}</span>
+            </div>
+            <div class="pill">${escapeHtml(m.service)} · <span class="muted">${escapeHtml(m.created_at)}</span></div>
+          </div>
+          <div class="msg">${escapeHtml(m.message)}</div>
+        </div>
+      `).join('');
+    }
+
+    async function load() {
+      setStatus('Loading…', '');
+      try {
+        const res = await fetch('/api/admin/messages?limit=200');
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.detail || 'Failed to load messages.');
+        render(data.messages || []);
+        setStatus(`Loaded ${data.messages.length} message(s).`, '');
+      } catch (e) {
+        setStatus(e.message || 'Failed to load messages.', 'err');
+      }
+    }
+
+    refreshBtn.addEventListener('click', load);
+    load();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,30 @@
+# ── Runtime dependencies ─────────────────────────────────────────────────────
+# Pin to exact versions so deployments are reproducible and CVE patches
+# are applied deliberately, not silently.
+# Upgrade with: pip install -U <pkg> && pip freeze | grep <pkg>
+
+# ASGI framework + Starlette (CORSMiddleware, TrustedHostMiddleware, StaticFiles)
+fastapi==0.136.0
+
+# Pydantic v2 — request/response validation
+pydantic==2.13.2
+
+# Pydantic settings — env / .env config loader
+pydantic-settings>=2.4.0
+
+# Needed by FastAPI to parse multipart/form-data (also used internally by Starlette)
+python-multipart==0.0.26
+
+# ── Server ────────────────────────────────────────────────────────────────────
+# uvicorn[standard] pulls in:
+#   • httptools  — fast HTTP/1.1 parser
+#   • uvloop     — faster event loop (Linux/macOS)
+#   • websockets — WebSocket support
+#   • watchfiles — --reload support in dev
+uvicorn[standard]==0.44.0
+
+# ── Database ──────────────────────────────────────────────────────────────────
+pymongo>=4.0.0
+
+# ── Security ──────────────────────────────────────────────────────────────────
+passlib[bcrypt]>=1.7.4

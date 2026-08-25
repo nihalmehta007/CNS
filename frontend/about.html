@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>About Us · Crimson Nyx Studios</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Crimson Nyx Studios — born in the shadows, built for brilliance. Meet the founders and learn about our dark aesthetic approach to creative design.">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="animations.css">
+<style>
+  .about-main { padding: 0 var(--sp-lg) var(--sp-3xl); }
+  .about-grid {
+    display: grid; grid-template-columns: 1.3fr 1fr;
+    gap: 80px; align-items: flex-start; margin-top: 40px;
+  }
+  .about-body {
+    font-size: 15px; color: var(--zinc-light); line-height: 1.9; margin-bottom: 32px;
+  }
+  .about-pill-row {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px;
+  }
+  .about-pill {
+    border-radius: 999px;
+    border: 1px solid rgba(225, 29, 72, 0.35);
+    padding: 8px 16px; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--zinc-light);
+    transition: background var(--dur-med), color var(--dur-med), border-color var(--dur-med);
+  }
+  .about-pill:hover {
+    background: rgba(225, 29, 72, 0.1);
+    border-color: var(--crimson);
+    color: var(--white);
+  }
+
+  .about-quote-block {
+    border-left: 2px solid var(--crimson);
+    padding: 28px 32px; background: rgba(225, 29, 72, 0.04);
+    margin-bottom: 32px;
+  }
+  .about-quote {
+    font-family: var(--serif); font-size: 20px; font-style: italic;
+    line-height: 1.6; color: var(--white); margin-bottom: 18px;
+  }
+  .about-quote-attr {
+    font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--zinc);
+  }
+  .about-meta {
+    font-size: 12px; color: var(--zinc); line-height: 1.8;
+  }
+
+  /* ── Founders ─────────────────────────────────────────────── */
+  .founders-section {
+    margin-top: 80px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    padding-top: 80px;
+  }
+  .founders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px; margin-top: 40px;
+  }
+  .founder-card {
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 40px 32px; border-radius: 4px;
+    position: relative; overflow: hidden;
+  }
+  .founder-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: var(--crimson);
+    transform: scaleX(0); transition: transform var(--dur-med); transform-origin: left;
+  }
+  .founder-card:hover::after { transform: scaleX(1); }
+  .founder-photo {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: #1a1a1a; border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 24px; object-fit: cover; display: block;
+    transition: border-color var(--dur-med), filter var(--dur-med);
+    filter: grayscale(10%);
+  }
+  .founder-card:hover .founder-photo {
+    border-color: var(--crimson);
+    filter: grayscale(0%);
+  }
+  .founder-name {
+    font-family: var(--serif); font-size: 24px; font-weight: 700;
+    margin-bottom: 6px; color: var(--white);
+  }
+  .founder-role {
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--crimson); margin-bottom: 20px;
+  }
+  .founder-bio {
+    font-size: 14px; color: var(--zinc-light); line-height: 1.8;
+  }
+
+  @media (max-width: 900px) {
+    .about-main { padding: 0 20px 80px; }
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html#hero" class="nav-brand">
+    <img src="cnslogo1.png" alt="Crimson Nyx Studios" class="nav-logo-img">
+    <div class="nav-brand-text">
+      <span class="nav-brand-name">Crimson Nyx Studios</span>
+      <span class="nav-brand-tagline">Where Brilliance Emerges</span>
+    </div>
+  </a>
+  <div class="nav-right">
+    <ul class="nav-links" id="navLinks">
+      <li><a href="services.html">Services</a></li>
+      <li><a href="work.html">Work</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <a href="contact.html" class="nav-cta magnetic">Start a Project</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<header class="page-hero">
+  <div class="page-eyebrow reveal reveal-fade-up">About Us</div>
+  <h1 class="page-title reveal reveal-fade-up delay-100">
+    Born in the shadows.<br>Built for brilliance.
+  </h1>
+  <p class="page-sub reveal reveal-fade-up delay-200">
+    Crimson Nyx Studios is the place where dark aesthetics, bold ideas, and precise execution collide.
+  </p>
+</header>
+
+<main class="about-main">
+  <div class="about-grid">
+    <section>
+      <p class="about-body reveal reveal-slide-right">
+        We're a small, focused studio that thrives after dark—when the world
+        is quiet and the ideas get loud. Our work pulls from film, games,
+        and cyberpunk culture to build visuals and
+        experiences that feel like they belong in another universe.
+      </p>
+      <p class="about-body reveal reveal-slide-right delay-100">
+        Whether it's a logo, a website, a game, or an app, we care about
+        every frame, every pixel, every interaction. We believe that the
+        best work isn't just seen or used—it's felt.
+      </p>
+      <div class="about-pill-row reveal reveal-scale-in delay-200">
+        <span class="about-pill">Design-Driven</span>
+        <span class="about-pill">Tech-Savvy</span>
+        <span class="about-pill">Indie Spirit</span>
+        <span class="about-pill">Cinematic Energy</span>
+      </div>
+    </section>
+
+    <aside>
+      <div class="about-quote-block reveal reveal-fade-in hover-elevate">
+        <p class="about-quote">
+          "We don't just design &mdash; we awaken the hidden potential in every project."
+        </p>
+        <p class="about-quote-attr">— Crimson Nyx Team</p>
+      </div>
+      <p class="about-meta reveal reveal-fade-in delay-100">
+        Based online and working globally, we collaborate with indie
+        creators, studios, brands, and teams who want something a little
+        darker, a little sharper, and a lot more memorable.
+      </p>
+    </aside>
+  </div>
+
+  <section class="founders-section reveal reveal-fade-up">
+    <div class="page-eyebrow">The Minds Behind It</div>
+    <h2 class="page-title" style="font-size: clamp(32px, 3.5vw, 48px); margin-bottom: 40px">
+      Meet the Founders
+    </h2>
+
+    <div style="display: flex; justify-content: center; margin-bottom: 40px">
+      <div class="founder-card reveal reveal-scale-in delay-100 hover-elevate"
+           style="max-width: 600px; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <img src="founder.jpeg" alt="Nihal" class="founder-photo">
+        <h3 class="founder-name">Nihal Mehta</h3>
+        <p class="founder-role">Founder & Creative Director</p>
+        <p class="founder-bio">
+          With a background in cinematic design and full-stack development,
+          Nihal bridges the gap between raw artistic vision and cutting-edge
+          technology. Driven by a passion for the dark aesthetic, he
+          established Crimson Nyx to build atmospheric digital experiences.
+        </p>
+      </div>
+    </div>
+
+    <div class="founders-grid">
+      <div class="founder-card reveal reveal-scale-in delay-200 hover-elevate">
+        <img src="co1.jpeg" alt="Co-Founder" class="founder-photo">
+        <h3 class="founder-name">Araya Mewada</h3>
+        <p class="founder-role">Co-Founder & Operations Lead</p>
+        <p class="founder-bio">
+          Ensuring every project aligns with the studio's cinematic vision.
+          With deep expertise in studio operations and project pacing, they
+          orchestrate the team to deliver brilliance on schedule.
+        </p>
+      </div>
+
+      <div class="founder-card reveal reveal-scale-in delay-300 hover-elevate">
+        <img src="co2.jpeg" alt="Co-Founder" class="founder-photo">
+        <h3 class="founder-name">Priyank Pillai</h3>
+        <p class="founder-role">Co-Founder & Technical Lead</p>
+        <p class="founder-bio">
+          Specializing in system architecture and interactive mechanics,
+          they bring the precision needed to turn dark, ambitious concepts
+          into flawless, high-performance digital realities.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-brand">
+    <img src="cnslogo1.png" alt="Crimson Nyx Studios" class="footer-logo-img">
+    <div class="footer-brand-text">
+      <span class="footer-brand-name">Crimson Nyx Studios</span>
+      <span class="footer-brand-tagline">Where Brilliance Emerges</span>
+    </div>
+  </div>
+  <p class="footer-copy">© 2026 Crimson Nyx Studios. All rights reserved.</p>
+</footer>
+
+<script src="animations.js"></script>
+</body>
+</html>

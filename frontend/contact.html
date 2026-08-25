@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Contact · Crimson Nyx Studios</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Get in touch with Crimson Nyx Studios. Share your project idea and we'll get back to you with next steps, timelines, and possibilities.">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="animations.css">
+<style>
+  .contact-main {
+    max-width: 880px; margin: 0 auto 120px; padding: 0 var(--sp-lg);
+  }
+  .contact-layout {
+    display: grid; grid-template-columns: 1.3fr 1fr;
+    gap: 60px; align-items: flex-start; margin-top: 40px;
+  }
+  .contact-side {
+    font-size: 13px; color: var(--zinc-light); line-height: 1.9;
+  }
+  .contact-side strong { color: var(--white); }
+  .contact-email { margin-top: 20px; }
+  .contact-email span { color: var(--crimson); }
+
+  @media (max-width: 900px) {
+    .contact-main { padding: 0 20px; margin-bottom: 80px; }
+    .contact-layout { grid-template-columns: 1fr; gap: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html#hero" class="nav-brand">
+    <img src="cnslogo1.png" alt="Crimson Nyx Studios" class="nav-logo-img">
+    <div class="nav-brand-text">
+      <span class="nav-brand-name">Crimson Nyx Studios</span>
+      <span class="nav-brand-tagline">Where Brilliance Emerges</span>
+    </div>
+  </a>
+  <div class="nav-right">
+    <ul class="nav-links" id="navLinks">
+      <li><a href="services.html">Services</a></li>
+      <li><a href="work.html">Work</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <a href="contact.html" class="nav-cta magnetic">Start a Project</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<header class="page-hero">
+  <div class="page-eyebrow reveal reveal-fade-up">Contact</div>
+  <h1 class="page-title reveal reveal-fade-up delay-100">Tell us what<br>you want to build.</h1>
+  <p class="page-sub reveal reveal-fade-up delay-200">Share a few details about your idea, and we'll get back to you with next steps, timelines, and possibilities.</p>
+</header>
+
+<main class="contact-main">
+  <div class="contact-layout">
+    <section class="reveal reveal-slide-right">
+      <form class="contact-form" id="contactForm">
+        <div class="form-row">
+          <input type="text" name="name" placeholder="Your Name" class="form-field" required>
+          <input type="email" name="email" placeholder="Email Address" class="form-field" required>
+        </div>
+        <input type="text" name="company" class="form-field" style="display:none" tabindex="-1" autocomplete="off">
+        <select class="form-field" name="service" required>
+          <option value="">Choose Service</option>
+          <option>Graphic Design</option>
+          <option>Website Development</option>
+          <option>Game Development</option>
+          <option>App Development</option>
+        </select>
+        <textarea name="message" placeholder="Tell us about your project..." rows="6" class="form-field" style="resize:vertical;" required></textarea>
+        <button type="submit" class="submit-btn" id="submitBtn">Send Message</button>
+        <div class="form-status" id="formStatus" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <aside class="contact-side reveal reveal-fade-in delay-200">
+      <p><strong>What helps the most?</strong></p>
+      <p>Share any links, references, timelines, and your approximate budget. The more we know, the better we can shape something that fits you.</p>
+      <p class="contact-email">Prefer email? Reach us at<br><span>crimsonnyxstudios@gmail.com</span></p>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-brand">
+    <img src="cnslogo1.png" alt="Crimson Nyx Studios" class="footer-logo-img">
+    <div class="footer-brand-text">
+      <span class="footer-brand-name">Crimson Nyx Studios</span>
+      <span class="footer-brand-tagline">Where Brilliance Emerges</span>
+    </div>
+  </div>
+  <p class="footer-copy">© 2026 Crimson Nyx Studios. All rights reserved.</p>
+</footer>
+
+<script>
+  const contactForm = document.getElementById('contactForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const formStatus = document.getElementById('formStatus');
+
+  function setStatus(text, kind) {
+    formStatus.textContent = text;
+    formStatus.className = 'form-status' + (kind ? (' ' + kind) : '');
+  }
+
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    setStatus('Sending...', '');
+    submitBtn.disabled = true;
+    const fd = new FormData(contactForm);
+    const payload = Object.fromEntries(fd.entries());
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || 'Something went wrong. Please try again.');
+      contactForm.reset();
+      setStatus('Message received. We\u2019ll get back to you shortly.', 'ok');
+    } catch (err) {
+      setStatus(err.message || 'Failed to send. Please try again.', 'err');
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+<script src="animations.js"></script>
+</body>
+</html>
