@@ -133,8 +133,12 @@ def _validate_origin(request: Request) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup / shutdown hooks."""
-    init_db()
+    """Startup / shutdown hooks.  Gracefully handle DB init failures so the
+    serverless function can still boot (lazy init in db.py is the fallback)."""
+    try:
+        init_db()
+    except Exception:
+        pass  # DB will be lazily initialised on first request via _get_collection()
     yield
     close_db()
 
