@@ -28,7 +28,7 @@ _col: Collection | None = None
 
 def _get_collection() -> Collection:
     if _col is None:
-        raise RuntimeError("Database not initialised – call init_db() first.")
+        init_db()
     return _col
 
 
@@ -80,7 +80,10 @@ def close_db() -> None:
 def db_health() -> dict[str, Any]:
     """Return a lightweight health-check payload."""
     if _client is None:
-        return {"mongo": "not_initialised"}
+        try:
+            init_db()
+        except Exception as exc:
+            return {"mongo": "error", "detail": str(exc)}
     try:
         _client.admin.command("ping")
         return {"mongo": "ok"}

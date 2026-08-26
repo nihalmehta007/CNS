@@ -59,7 +59,10 @@ class ContactPayload(BaseModel):
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 def _get_client_ip(request: Request) -> str:
-    """Extract client IP.  Configure trusted proxy headers for production."""
+    """Extract client IP, preferring the X-Forwarded-For header if behind a proxy."""
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
     host = request.client.host if request.client else "unknown"
     return host
 
