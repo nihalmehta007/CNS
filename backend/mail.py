@@ -90,10 +90,15 @@ def _send(name: str, email: str, service: str, message: str) -> None:
     msg.attach(MIMEText(_build_html(name, email, service, message), "html"))
 
     ctx = ssl.create_default_context()
-    with smtplib.SMTP(settings.MAIL_SERVER, settings.MAIL_PORT, timeout=10) as server:
-        server.starttls(context=ctx)
-        server.login(settings.MAIL_USERNAME, settings.MAIL_PASSWORD)
-        server.sendmail(settings.MAIL_USERNAME, [settings.MAIL_RECIPIENT], msg.as_string())
+    if settings.MAIL_PORT == 465:
+        with smtplib.SMTP_SSL(settings.MAIL_SERVER, settings.MAIL_PORT, context=ctx, timeout=10) as server:
+            server.login(settings.MAIL_USERNAME, settings.MAIL_PASSWORD)
+            server.sendmail(settings.MAIL_USERNAME, [settings.MAIL_RECIPIENT], msg.as_string())
+    else:
+        with smtplib.SMTP(settings.MAIL_SERVER, settings.MAIL_PORT, timeout=10) as server:
+            server.starttls(context=ctx)
+            server.login(settings.MAIL_USERNAME, settings.MAIL_PASSWORD)
+            server.sendmail(settings.MAIL_USERNAME, [settings.MAIL_RECIPIENT], msg.as_string())
 
     log.info("Contact email sent to %s (from: %s)", settings.MAIL_RECIPIENT, email)
 
