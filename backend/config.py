@@ -8,9 +8,11 @@ instead of calling ``os.environ.get()`` directly.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
-from typing import List
+from typing import Any, List
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -45,7 +47,34 @@ class Settings(BaseSettings):
     ADMIN_PASS_HASH: str = ""             # bcrypt hash (preferred in prod)
 
     # ── CORS ─────────────────────────────────────────────────────────
-    CORS_ORIGINS: List[str] = ["http://localhost:8001", "http://127.0.0.1:8001"]
+    CORS_ORIGINS: List[str] = [
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:8001",
+        "http://127.0.0.1:8001",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v: Any) -> List[str]:
+        """Support comma-separated string or JSON array in env vars, stripping trailing slashes."""
+        if isinstance(v, str):
+            v = v.strip()
+            if v.startswith("[") and v.endswith("]"):
+                try:
+                    return [str(orig).strip().rstrip("/") for orig in json.loads(v) if str(orig).strip()]
+                except Exception:
+                    pass
+            return [orig.strip().rstrip("/") for orig in v.split(",") if orig.strip()]
+        if isinstance(v, (list, tuple, set)):
+            return [str(orig).strip().rstrip("/") for orig in v if str(orig).strip()]
+        return v
 
     # ── Rate limiting ────────────────────────────────────────────────
     RATE_LIMIT_MAX: int = 5

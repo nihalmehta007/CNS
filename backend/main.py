@@ -37,6 +37,7 @@ ADMIN_PAGE = Path(__file__).resolve().parent / "admin.html"
 
 # ── Constants ────────────────────────────────────────────────────────────────
 EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+DEV_ORIGIN_RE = re.compile(r"^https?://(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$", re.IGNORECASE)
 ALLOWED_SERVICES = {
     "Graphic Design",
     "Website Development",
@@ -136,10 +137,52 @@ def _verify_admin(credentials: HTTPBasicCredentials = Depends(security)) -> None
 
 
 def _validate_origin(request: Request) -> None:
-    """Reject POST requests whose Origin does not match allowed CORS origins."""
+    """Validate POST request origin to prevent cross-site request forgery.
+
+    Permits:
+      1. Requests with no Origin header (direct / server-to-server).
+      2. Same-origin requests matching request.base_url or Host/Forwarded headers.
+      3. Wildcard origins if "*" in settings.CORS_ORIGINS.
+      4. Origins explicitly listed in settings.CORS_ORIGINS.
+      5. Any local loopback origin when APP_ENV == "development".
+    """
     origin = request.headers.get("origin")
-    if origin and origin not in settings.CORS_ORIGINS:
-        raise HTTPException(status_code=403, detail="Origin not allowed.")
+    if not origin:
+        return
+
+    origin_clean = origin.rstrip("/")
+
+    # 1. Allow same-origin requests (e.g. frontend served by this backend)
+    server_origin = str(request.base_url).rstrip("/")
+    if origin_clean == server_origin:
+        return
+
+    host = request.headers.get("x-forwarded-host") or request.headers.get("host")
+    if host:
+        proto = request.headers.get("x-forwarded-proto") or request.url.scheme
+        if origin_clean == f"{proto}://{host}":
+            return
+
+    # 2. Allow wildcard
+    if "*" in settings.CORS_ORIGINS:
+        return
+
+    # 3. Allow explicitly listed CORS origins
+    allowed_origins = {o.rstrip("/") for o in settings.CORS_ORIGINS}
+    if origin_clean in allowed_origins or origin in settings.CORS_ORIGINS:
+        return
+
+    # 4. In development mode, allow any localhost/loopback port
+    if settings.APP_ENV == "development" and DEV_ORIGIN_RE.match(origin_clean):
+        return
+
+    log.warning(
+        "Rejected request from unallowed origin: %s (allowed: %s, server: %s)",
+        origin,
+        settings.CORS_ORIGINS,
+        server_origin,
+    )
+    raise HTTPException(status_code=403, detail="Origin not allowed.")
 
 
 def _generate_csrf_token() -> str:
@@ -189,13 +232,16 @@ app = FastAPI(
 
 # ── Middleware ───────────────────────────────────────────────────────────────
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type", "Authorization", "X-CSRF-Token"],
-)
+cors_options = {
+    "allow_origins": settings.CORS_ORIGINS,
+    "allow_credentials": True,
+    "allow_methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization", "X-CSRF-Token"],
+}
+if settings.APP_ENV == "development":
+    cors_options["allow_origin_regex"] = r"^https?://(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$"
+
+app.add_middleware(CORSMiddleware, **cors_options)
 
 
 @app.middleware("http")
