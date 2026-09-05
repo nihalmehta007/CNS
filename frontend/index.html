@@ -649,7 +649,15 @@
         body: JSON.stringify(payload)
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.detail || 'Something went wrong. Please try again.');
+      if (!res.ok) {
+        let msg = data.detail;
+        if (Array.isArray(msg)) {
+          msg = msg.map(item => item.msg || JSON.stringify(item)).join(', ');
+        } else if (typeof msg !== 'string' || !msg.trim()) {
+          msg = data.message || (res.status >= 500 ? 'Server error. Please try again later.' : 'Failed to send. Please try again.');
+        }
+        throw new Error(msg);
+      }
       homeContactForm.reset();
       setHomeStatus('Message received. We\u2019ll get back to you shortly.', 'ok');
       // Refresh CSRF token after successful submission

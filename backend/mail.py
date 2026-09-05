@@ -9,6 +9,7 @@ Failures are logged but never propagate to the caller.
 from __future__ import annotations
 
 import logging
+import os
 import smtplib
 import ssl
 import threading
@@ -89,7 +90,7 @@ def _send(name: str, email: str, service: str, message: str) -> None:
     msg.attach(MIMEText(_build_html(name, email, service, message), "html"))
 
     ctx = ssl.create_default_context()
-    with smtplib.SMTP(settings.MAIL_SERVER, settings.MAIL_PORT, timeout=15) as server:
+    with smtplib.SMTP(settings.MAIL_SERVER, settings.MAIL_PORT, timeout=10) as server:
         server.starttls(context=ctx)
         server.login(settings.MAIL_USERNAME, settings.MAIL_PASSWORD)
         server.sendmail(settings.MAIL_USERNAME, [settings.MAIL_RECIPIENT], msg.as_string())
@@ -98,16 +99,31 @@ def _send(name: str, email: str, service: str, message: str) -> None:
 
 
 def send_contact_email(
-    *, name: str, email: str, service: str, message: str
-) -> None:
-    """Fire-and-forget email notification.  Runs in a background thread.
+    *, name: str, email: str, service: str, message: str, sync: bool = False
+) -> bool:
+    """Send email notification for a contact-form submission.
 
-    If mail is disabled (no MAIL_PASSWORD configured) this is a no-op.
-    Any SMTP errors are caught and logged — they never surface to the caller.
+    In serverless environments (e.g. Vercel) or when sync=True, sends
+    synchronously with a timeout so the process isn't frozen before the email is sent.
+    In standard server environments, runs in a background daemon thread.
+    Returns True if sent (or queued), False if disabled or failed.
     """
     if not settings.MAIL_ENABLED:
         log.debug("Mail disabled — skipping contact notification.")
-        return
+        return False
+
+    is_serverless = bool(
+        os.environ.get("VERCEL")
+        or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
+    )
+
+    if sync or is_serverless:
+        try:
+            _send(name, email, service, message)
+            return True
+        except Exception:
+            log.exception("Failed to send contact email for %s", email)
+            return False
 
     def _worker() -> None:
         try:
@@ -117,3 +133,4 @@ def send_contact_email(
 
     thread = threading.Thread(target=_worker, daemon=True)
     thread.start()
+    return True

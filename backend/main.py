@@ -343,10 +343,22 @@ async def submit_contact(payload: ContactPayload, request: Request) -> JSONRespo
         message=message,
     )
 
-    # Fire-and-forget email notification
-    send_contact_email(name=name, email=email, service=service, message=message)
+    # Deliver email notification
+    email_sent = send_contact_email(
+        name=name, email=email, service=service, message=message
+    )
 
-    return JSONResponse({"ok": True, "id": message_id})
+    # If both MongoDB storage and email notification failed
+    if not message_id and not email_sent:
+        log.error("Both database storage and email delivery failed.")
+        detail_msg = (
+            "Service temporarily unavailable. Please contact us directly via email."
+            if not settings.MAIL_ENABLED
+            else "Failed to deliver message. Please try again later or contact us directly."
+        )
+        raise HTTPException(status_code=503, detail=detail_msg)
+
+    return JSONResponse({"ok": True, "id": message_id or "email-delivered"})
 
 
 @app.get("/health")
