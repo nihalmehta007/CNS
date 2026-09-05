@@ -54,5 +54,20 @@ class Settings(BaseSettings):
     # ── Request size ─────────────────────────────────────────────────
     MAX_BODY_SIZE: int = 1_048_576        # 1 MB
 
+    # ── Secret key (CSRF signing) ────────────────────────────────────
+    SECRET_KEY: str = "change-me-in-production"
+
+    # ── Mail (SMTP) ──────────────────────────────────────────────────
+    MAIL_SERVER: str = "smtp.gmail.com"
+    MAIL_PORT: int = 587
+    MAIL_USERNAME: str = "crimsonnyxstudios@gmail.com"
+    MAIL_PASSWORD: str = ""               # Gmail App Password (required)
+    MAIL_RECIPIENT: str = "crimsonnyxstudios@gmail.com"
+    MAIL_ENABLED: bool = True             # auto-disabled if password is empty
+
 
 settings = Settings()
+
+# Auto-disable mail if no password is configured
+if not settings.MAIL_PASSWORD:
+    settings.MAIL_ENABLED = False

@@ -103,11 +103,24 @@
   const contactForm = document.getElementById('contactForm');
   const submitBtn = document.getElementById('submitBtn');
   const formStatus = document.getElementById('formStatus');
+  let csrfToken = '';
 
   function setStatus(text, kind) {
     formStatus.textContent = text;
     formStatus.className = 'form-status' + (kind ? (' ' + kind) : '');
   }
+
+  // Fetch CSRF token on page load
+  async function fetchCsrfToken() {
+    try {
+      const res = await fetch('/api/csrf-token', { credentials: 'same-origin' });
+      const data = await res.json();
+      csrfToken = data.csrf_token || '';
+    } catch (err) {
+      console.warn('Could not fetch CSRF token:', err);
+    }
+  }
+  fetchCsrfToken();
 
   contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -118,13 +131,19 @@
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
+        },
+        credentials: 'same-origin',
         body: JSON.stringify(payload)
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.detail || 'Something went wrong. Please try again.');
       contactForm.reset();
       setStatus('Message received. We\u2019ll get back to you shortly.', 'ok');
+      // Refresh CSRF token after successful submission
+      fetchCsrfToken();
     } catch (err) {
       setStatus(err.message || 'Failed to send. Please try again.', 'err');
     } finally {

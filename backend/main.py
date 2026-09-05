@@ -1,13 +1,14 @@
 """
 backend/main.py — FastAPI application for Crimson Nyx Studios.
 
-Serves the static frontend, a contact-form API, and a password-protected
-admin dashboard.
+Serves the static frontend, a contact-form API with email notifications,
+CSRF-protected forms, and a password-protected admin dashboard.
 """
 
 from __future__ import annotations
 
 import html
+import logging
 import re
 import secrets
 import time
@@ -20,11 +21,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
+from itsdangerous import BadSignature, URLSafeTimedSerializer
 from passlib.hash import bcrypt
 from pydantic import BaseModel, Field
 
 from backend.config import settings
 from backend.db import close_db, db_health, init_db, insert_message, list_messages
+from backend.mail import send_contact_email
+
+log = logging.getLogger(__name__)
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend"
@@ -39,11 +44,15 @@ ALLOWED_SERVICES = {
     "App Development",
 }
 
+# CSRF token max age: 2 hours
+CSRF_MAX_AGE = 7200
+
 # ── Rate limiter state ───────────────────────────────────────────────────────
 _RATE: dict[str, list[float]] = {}
 _LAST_CLEANUP = time.time()
 
 security = HTTPBasic()
+csrf_serializer = URLSafeTimedSerializer(settings.SECRET_KEY, salt="csrf-token")
 
 
 # ── Request models ───────────────────────────────────────────────────────────
@@ -109,6 +118,10 @@ def _verify_admin(credentials: HTTPBasicCredentials = Depends(security)) -> None
     if settings.ADMIN_PASS_HASH:
         pass_ok = bcrypt.verify(credentials.password, settings.ADMIN_PASS_HASH)
     else:
+        if settings.APP_ENV == "production":
+            log.warning(
+                "Using plaintext ADMIN_PASS in production — set ADMIN_PASS_HASH instead!"
+            )
         pass_ok = secrets.compare_digest(
             credentials.password.encode("utf8"),
             settings.ADMIN_PASS.encode("utf8"),
@@ -129,6 +142,29 @@ def _validate_origin(request: Request) -> None:
         raise HTTPException(status_code=403, detail="Origin not allowed.")
 
 
+def _generate_csrf_token() -> str:
+    """Generate a signed CSRF token."""
+    return csrf_serializer.dumps(secrets.token_hex(16))
+
+
+def _validate_csrf_token(request: Request) -> None:
+    """Validate the CSRF token from the X-CSRF-Token header against the cookie."""
+    cookie_token = request.cookies.get("csrf_token")
+    header_token = request.headers.get("x-csrf-token")
+
+    if not cookie_token or not header_token:
+        raise HTTPException(status_code=403, detail="Missing CSRF token.")
+
+    if cookie_token != header_token:
+        raise HTTPException(status_code=403, detail="Invalid CSRF token.")
+
+    # Verify the token signature and expiry
+    try:
+        csrf_serializer.loads(header_token, max_age=CSRF_MAX_AGE)
+    except BadSignature:
+        raise HTTPException(status_code=403, detail="Invalid or expired CSRF token.")
+
+
 # ── Lifespan ─────────────────────────────────────────────────────────────────
 
 @asynccontextmanager
@@ -147,7 +183,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Crimson Nyx Studios Backend",
-    version="2.0.0",
+    version="3.0.0",
     lifespan=lifespan,
 )
 
@@ -158,7 +194,7 @@ app.add_middleware(
     allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_headers=["Content-Type", "Authorization", "X-CSRF-Token"],
 )
 
 
@@ -207,12 +243,30 @@ async def limit_body_size(request: Request, call_next):
     return await call_next(request)
 
 
-# ── Routes ───────────────────────────────────────────────────────────────────
+# ── API Routes ───────────────────────────────────────────────────────────────
+
+@app.get("/api/csrf-token")
+async def get_csrf_token() -> JSONResponse:
+    """Issue a CSRF token — returned in the JSON body and set as a cookie."""
+    token = _generate_csrf_token()
+    response = JSONResponse({"csrf_token": token})
+    response.set_cookie(
+        key="csrf_token",
+        value=token,
+        httponly=False,       # JS needs to read this
+        secure=settings.APP_ENV == "production",
+        samesite="strict",
+        max_age=CSRF_MAX_AGE,
+        path="/",
+    )
+    return response
+
 
 @app.post("/api/contact")
 async def submit_contact(payload: ContactPayload, request: Request) -> JSONResponse:
     """Accept a contact-form submission."""
     _validate_origin(request)
+    _validate_csrf_token(request)
     ip = _get_client_ip(request)
     _rate_limit(ip)
 
@@ -243,6 +297,9 @@ async def submit_contact(payload: ContactPayload, request: Request) -> JSONRespo
         message=message,
     )
 
+    # Fire-and-forget email notification
+    send_contact_email(name=name, email=email, service=service, message=message)
+
     return JSONResponse({"ok": True, "id": message_id})
 
 
@@ -256,6 +313,8 @@ def health() -> JSONResponse:
 def favicon() -> FileResponse:
     return FileResponse(FRONTEND_DIR / "cnslogo1.png", media_type="image/png")
 
+
+# ── Admin Routes ─────────────────────────────────────────────────────────────
 
 @app.get("/admin")
 def admin_page(_: None = Depends(_verify_admin)) -> FileResponse:
@@ -273,9 +332,31 @@ def admin_messages(
     )
 
 
+# ── Page Routes (clean URLs) ────────────────────────────────────────────────
+
 @app.get("/")
 def root() -> FileResponse:
     return FileResponse(FRONTEND_DIR / "index.html")
+
+
+@app.get("/services")
+def services_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "services.html")
+
+
+@app.get("/work")
+def work_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "work.html")
+
+
+@app.get("/about")
+def about_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "about.html")
+
+
+@app.get("/contact")
+def contact_page() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "contact.html")
 
 
 # Serve the entire frontend folder (html, images, etc.)

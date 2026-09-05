@@ -28,3 +28,6 @@ pymongo>=4.0.0
 
 # ── Security ──────────────────────────────────────────────────────────────────
 passlib[bcrypt]>=1.7.4
+
+# Secure cookie signing (CSRF tokens)
+itsdangerous>=2.1.0

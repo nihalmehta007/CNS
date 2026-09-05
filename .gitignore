@@ -1,0 +1,20 @@
+# Environment variables
+.env
+.env*.local
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Local data & logs
+backend/data/
+*.log

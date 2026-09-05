@@ -4,12 +4,25 @@
     {
       "src": "api/index.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "frontend/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.py" },
+    { "src": "/health", "dest": "/api/index.py" },
+    { "src": "/admin", "dest": "/api/index.py" },
+    { "src": "/services", "dest": "/api/index.py" },
+    { "src": "/work", "dest": "/api/index.py" },
+    { "src": "/about", "dest": "/api/index.py" },
+    { "src": "/contact", "dest": "/api/index.py" },
+    { "src": "/favicon.ico", "dest": "/api/index.py" },
     {
-      "src": "/(.*)",
-      "dest": "/api/index.py"
-    }
+      "src": "/(.+\\.(?:css|js|png|jpeg|jpg|gif|svg|ico|woff2?|ttf|eot))",
+      "dest": "/frontend/$1"
+    },
+    { "src": "/(.*)", "dest": "/api/index.py" }
   ]
 }
