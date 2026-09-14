@@ -40,7 +40,7 @@ class Settings(BaseSettings):
 
     # ── Admin credentials ────────────────────────────────────────────
     # ADMIN_PASS_HASH should be a bcrypt hash produced with:
-    #   python -c "from passlib.hash import bcrypt; print(bcrypt.hash('yourpass'))"
+    #   python -c "import bcrypt; print(bcrypt.hashpw(b'yourpass', bcrypt.gensalt()).decode())"
     # When ADMIN_PASS_HASH is set it takes precedence over ADMIN_PASS.
     ADMIN_USER: str = "admin"
     ADMIN_PASS: str = "admin123"          # plaintext fallback (dev only)

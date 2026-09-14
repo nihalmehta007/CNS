@@ -22,7 +22,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from itsdangerous import BadSignature, URLSafeTimedSerializer
-from passlib.hash import bcrypt
+import bcrypt
 from pydantic import BaseModel, Field
 
 from backend.config import settings
@@ -117,7 +117,13 @@ def _verify_admin(credentials: HTTPBasicCredentials = Depends(security)) -> None
     )
 
     if settings.ADMIN_PASS_HASH:
-        pass_ok = bcrypt.verify(credentials.password, settings.ADMIN_PASS_HASH)
+        try:
+            pass_ok = bcrypt.checkpw(
+                credentials.password.encode("utf8"),
+                settings.ADMIN_PASS_HASH.encode("utf8"),
+            )
+        except Exception:
+            pass_ok = False
     else:
         if settings.APP_ENV == "production":
             log.warning(

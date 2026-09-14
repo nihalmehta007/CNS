@@ -48,7 +48,7 @@ Admin UI (HTTP Basic auth):
 Generate a password hash:
 
 ```bash
-python -c "from passlib.hash import bcrypt; print(bcrypt.hash('yourpassword'))"
+python -c "import bcrypt; print(bcrypt.hashpw(b'yourpassword', bcrypt.gensalt()).decode())"
 ```
 
 Then set in `.env`:
