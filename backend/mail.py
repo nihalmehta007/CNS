@@ -26,38 +26,43 @@ def _build_html(name: str, email: str, service: str, message: str) -> str:
     return f"""\
 <html>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-             background: #0a0a0a; color: #fafafa; padding: 32px;">
-  <div style="max-width: 560px; margin: 0 auto; background: #111; border: 1px solid rgba(255,255,255,0.06);
-              padding: 36px; border-radius: 4px;">
+             background: #0a0a0a; color: #fafafa; padding: 32px 16px; margin: 0;">
+  <div style="max-width: 560px; margin: 0 auto; background: #111111; border: 1px solid #27272a;
+              padding: 36px; border-radius: 6px;">
     <h2 style="margin: 0 0 4px; font-size: 18px; color: #e11d48; text-transform: uppercase;
-               letter-spacing: 0.1em;">
+               letter-spacing: 0.1em; font-weight: 700;">
       New Contact Submission
     </h2>
-    <p style="margin: 0 0 28px; font-size: 12px; color: #71717a;">Crimson Nyx Studios</p>
+    <p style="margin: 0 0 24px; font-size: 12px; color: #71717a;">Crimson Nyx Studios</p>
 
     <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
       <tr>
-        <td style="padding: 10px 0; color: #71717a; width: 100px; vertical-align: top;">Name</td>
-        <td style="padding: 10px 0; color: #fafafa; font-weight: 600;">{name}</td>
+        <td style="padding: 8px 16px 8px 0; color: #71717a; width: 80px; vertical-align: top;">Name</td>
+        <td style="padding: 8px 0; color: #fafafa; font-weight: 600;">{name}</td>
       </tr>
       <tr>
-        <td style="padding: 10px 0; color: #71717a; vertical-align: top;">Email</td>
-        <td style="padding: 10px 0;">
+        <td style="padding: 8px 16px 8px 0; color: #71717a; vertical-align: top;">Email</td>
+        <td style="padding: 8px 0;">
           <a href="mailto:{email}" style="color: #e11d48; text-decoration: none;">{email}</a>
         </td>
       </tr>
       <tr>
-        <td style="padding: 10px 0; color: #71717a; vertical-align: top;">Service</td>
-        <td style="padding: 10px 0; color: #fafafa;">{service}</td>
-      </tr>
-      <tr>
-        <td style="padding: 10px 0; color: #71717a; vertical-align: top;">Message</td>
-        <td style="padding: 10px 0; color: #a1a1aa; line-height: 1.7;
-                   white-space: pre-wrap;">{message}</td>
+        <td style="padding: 8px 16px 8px 0; color: #71717a; vertical-align: top;">Service</td>
+        <td style="padding: 8px 0; color: #fafafa;">{service}</td>
       </tr>
     </table>
 
-    <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 28px 0 16px;">
+    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #27272a;">
+      <div style="margin: 0 0 10px; font-size: 11px; font-weight: 600; text-transform: uppercase;
+                  letter-spacing: 0.08em; color: #71717a;">
+        Message
+      </div>
+      <div style="background: #18181b; border: 1px solid #27272a; border-radius: 6px;
+                  padding: 16px 20px; color: #e4e4e7; font-size: 14px; line-height: 1.7;
+                  white-space: pre-wrap; word-break: break-word;">{message}</div>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #27272a; margin: 28px 0 16px;">
     <p style="font-size: 11px; color: #52525b; margin: 0;">
       This email was sent automatically from your website's contact form.
     </p>
